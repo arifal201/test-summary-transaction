@@ -28,3 +28,11 @@ Route::get('customers/{id}', 'CustomerController@show');
 Route::post('customers', 'CustomerController@store');
 Route::put('customers/{id}', 'CustomerController@update');
 Route::delete('customers/{id}', 'CustomerController@destroy');
+
+Route::get('transactions', 'TransactionController@index');
+Route::get('transactions/{id}', 'TransactionController@show');
+Route::post('transactions', 'TransactionController@store');
+Route::put('transactions/{id}', 'TransactionController@update');
+Route::delete('transactions/{id}', 'TransactionController@destroy');
+
+Route::get('summary', 'TransactionController@summary');
