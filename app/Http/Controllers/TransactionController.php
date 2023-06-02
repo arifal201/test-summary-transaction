@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Transaction;
+use App\Product;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -36,8 +37,32 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        $transaction = Transaction::create($request->all());
-        return response()->json($transaction);
+        $validRequest = $request->hasAny(['product_id', 'customer_id', 'total', 'quantity']);
+        if ($validRequest){
+            $product = Product::find($request->input('product_id'));
+            if($product->stock >= 0){
+                $transaction = Transaction::create([
+                    'product_id' => $request->input('product_id'),
+                    'customer_id' => $request->input('customer_id'),
+                    'total' => $request->input('total'),
+                    'quantity' => $request->input('quantity'),
+                    'product_stock' => $product->stock,
+                ]);
+                $count = $product->stock - $transaction->quantity;
+                $product->update(['stock' => $count]);
+                $resultResponse = [
+                    'data' => $transaction,
+                    'message' => 'success created data',
+                    'status' => 200
+
+                ];
+                return response()->json($resultResponse);
+            }else{
+                return response()->json('stock tidak tersedia');
+            }
+        }else{
+            return response()->json('sorry parameter wrong');
+        }
     }
 
     /**
@@ -72,9 +97,15 @@ class TransactionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $transaction = Transaction::find($id);
-        $transaction->update($request->all());
-        return response()->json($transaction);
+
+        $validRequest = $request->hasAny(['product_id', 'customer_id', 'total', 'quantity']);
+        if($validRequest){
+            $transaction = Transaction::find($id);
+            $transaction->update($request->all());
+            return response()->json($transaction);
+        }else{
+            return response()->json('please check parameters');
+        }
     }
 
     /**
@@ -95,22 +126,21 @@ class TransactionController extends Controller
 
         foreach ($transactions as $key => $value) 
         {
-            $data = [
+            array_push( $data, 
                 [
                     "id" => $value->id,
                     "product_name" => $value->product->name,
-                    "stock" => $value->product->stock,
+                    "stock" => $value->product_stock,
                     "quantity" => $value->quantity,
                     "date" => $value->created_at,
                     "type" => $value->product->type
-                ]
-            ];
+                ]);
         }
-        $result = [
+        $resultResponse = [
             'data' => $data,
             'status' => 200,
             'message' => 'success data'
         ];
-        return response()->json($result);
+        return response()->json($resultResponse);
     }
 }
