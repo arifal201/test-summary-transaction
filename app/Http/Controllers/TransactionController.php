@@ -108,17 +108,15 @@ class TransactionController extends Controller
 
     public function summary(Request $request){
         $data = [];
+        $orderBy = $request->has('order_by') ? $request->input('order_by') : 'date_transaction';
+        $sortBy = $request->has('sort_by') ? $request->input('sort_by') : 'desc';
         if($request->hasAny(['search_product'])){
             $searchProduct = $request->input('search_product');
             $transactions = Transaction::where('product_name','ilike','%'.$searchProduct.'%')
-            ->orderBy('product_name','desc')
+            ->orderBy($orderBy,$sortBy)
             ->get();
-        }else if($request->hasAny(['order_by'])){
-            $orderBy = $request->has('order_by') ? $request->input('order_by') : 'date_transaction';
-            $sortBy = $request->has('sort_by') ? $request->input('sort_by') : 'desc';
-            $transactions = Transaction::orderBy($orderBy,$sortBy)->get();
         }else{
-            $transactions = Transaction::all();
+            $transactions = Transaction::orderBy($orderBy,$sortBy)->get();
         }
 
         foreach ($transactions as $key => $value) 
@@ -129,7 +127,7 @@ class TransactionController extends Controller
                     "product_name" => $value->product_name,
                     "stock" => $value->product_stock,
                     "quantity" => $value->quantity,
-                    "date_transaction" => $value->date_transaction,
+                    "date_transaction" => Carbon::parse($value->date_transaction)->format('d-m-Y'),
                     "type" => $value->product->type
                 ]);
         }
