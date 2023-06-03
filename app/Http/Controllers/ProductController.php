@@ -19,16 +19,6 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -36,8 +26,12 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $product = Product::create($request->all());
-        return response()->json($product);
+        if($request->hasAny(['name','stock','price','type'])){
+            $product = Product::create($request->all());
+            return response()->json($product);
+        }else{
+            return response()->json('please check parameters');
+        }
     }
 
     /**
@@ -53,17 +47,6 @@ class ProductController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Product $product)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -72,9 +55,13 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $product = Product::find($id);
-        $product->update($request->all());
-        return response()->json($product);
+        if($request->hasAny(['name','stock','price','type'])){
+            $product = Product::find($id);
+            $product->update($request->all());
+            return response()->json($product);
+        }else{
+            return response()->json('please check parameters');
+        }
     }
 
     /**

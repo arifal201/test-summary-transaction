@@ -9,7 +9,7 @@ use App\Product;
 class Transaction extends Model
 {
     protected $table = 'transactions';
-    protected $fillable = ['quantity', 'total', 'product_id', 'customer_id', 'product_stock'];
+    protected $fillable = ['quantity', 'total', 'product_id', 'customer_id', 'product_stock','product_name', 'date_transaction'];
 
     public function product(){
         return $this->belongsTo('App\Product');

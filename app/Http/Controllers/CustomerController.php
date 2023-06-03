@@ -19,16 +19,6 @@ class CustomerController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -36,8 +26,12 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        $customer = Customer::create($request->all());
-        return response()->json($customer);
+        if($request->hasAny(['name','phone','address'])){
+            $customer = Customer::create($request->all());
+            return response()->json($customer);
+        }else{
+            return response()->json('please check parameters');
+        }
     }
 
     /**
@@ -53,17 +47,6 @@ class CustomerController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Customer  $customer
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Customer $customer)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -72,9 +55,13 @@ class CustomerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $customer = Customer::find($id);
-        $customer->update($request->all());
-        return response()->json($customer);
+        if($request->hasAny(['name','phone','address'])){
+            $customer = Customer::find($id);
+            $customer->update($request->all());
+            return response()->json($customer);
+        }else{
+            return response()->json('please check parameters');
+        }
     }
 
     /**
